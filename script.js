@@ -1,24 +1,29 @@
-var slideIndex = 1;
-showDivs(slideIndex);
+// Optional: Add interactivity, like smooth scrolling
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    document.querySelector(this.getAttribute('href')).scrollIntoView({
+      behavior: 'smooth'
+    });
+  });
+});
 
-function plusDivs(n) {
-  showDivs(slideIndex += n);
-}
+// Intersection Observer to trigger animations on scroll
+const sections = document.querySelectorAll('.section');
 
-function showDivs(n) {
-  var i;
-  var x = document.getElementsByClassName("mySlides");
-  if (n > x.length) {slideIndex = 1}
-  if (n < 1) {slideIndex = x.length} ;
-  for (i = 0; i < x.length; i++) {
-    x[i].style.display = "none";
-  }
-  x[slideIndex-1].style.display = "block";
-}
+const observer = new IntersectionObserver((entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.remove('hidden'); // Reveal the section
+      observer.unobserve(entry.target); // Stop observing once revealed
+    }
+  });
+}, {
+  threshold: 0.2 // Trigger when 20% of the section is visible
+});
 
-
-function parallax(){
-  var prlx_lyr_1 =document.getElementById('prlx_lyr_1');
-  prlx_lyr_1.style.top = -(window.pageYOffset / 4)+'px';
-}
-window.addEventListener("scroll", parallax, false);
+// Add 'hidden' class initially
+sections.forEach(section => {
+  section.classList.add('hidden');
+  observer.observe(section);
+});
